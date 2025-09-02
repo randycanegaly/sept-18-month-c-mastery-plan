@@ -1,26 +1,26 @@
 cmake_minimum_required(VERSION 3.10)
-project(cl_arg_parser)
+project(CLArgsParser)
 
 #Include CTest for running tests 
 include(CTest)
 
-#Add your production code as a library
-#add_library(DynTwoDArr STATIC array.c)
-#target_include_directories(DynTwoDArr PUBLIC ../../src/week02)
+#create library for tdd Unity framework
+message("the starting path here is ${CMAKE_SOURCE_DIR}")
+add_library(Unity STATIC ../external/unity/src/unity.c)
+target_include_directories(Unity PUBLIC ../external/unity/src)
 
-#add_executable(ArrExe array.c)
-#target_link_libraries(ArrExe DynTwoDArr)
-#target_compile_definitions(ArrExe PRIVATE IS_EXE)
+#create program code as a library 
+add_library(CLArgs STATIC src/cl_args.c)
+target_include_directories(CLArgs PUBLIC src)
 
-#Add Unity from the submodule
-#add_library(Unity STATIC ../../external/unity/src/unity.c)
-#target_include_directories(Unity PUBLIC ../../external/unity/src)
+#create the test executable
+add_executable(CLArgsTest test/test_cl_args.c)
+target_link_libraries(CLArgsTest CLArgs Unity)
 
-#Add test executables
-#add_executable(ArrTest ../../test/week02/test_array.c)
-#target_link_libraries(ArrTest DynTwoDArr Unity)
-#target_link_libraries(ArrTest Unity)
+#add the test
+add_test(NAME CLArgsTest COMMAND CLArgsTest)
 
-#Register the tests with CTest
-#add_test(NAME ArrTest COMMAND ArrTest)
-
+#create program executable
+add_executable(CLArgsExe src/cl_args.c)
+target_link_libraries(CLArgsExe CLArgs)
+target_compile_definitions(CLArgsExe PRIVATE IS_EXE)
