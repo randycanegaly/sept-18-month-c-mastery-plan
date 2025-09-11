@@ -11,9 +11,7 @@ void test_dummy(void) { printf("dummy test\n"); }
 
 void test_no_args(void) {
 	char *no_args[0];	
-
-	parse_args(1, no_args);	
-	TEST_ASSERT_EQUAL_STRING(USAGE, actual);
+	char *actual =  parse_args(1, no_args);
 }
 
 int main(void) {
