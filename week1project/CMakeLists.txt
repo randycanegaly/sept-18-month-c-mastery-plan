@@ -4,6 +4,9 @@ project(CLArgsParser)
 #Include CTest for running tests 
 include(CTest)
 
+# Enable testing for the project
+enable_testing()
+
 #create library for tdd Unity framework
 message("the starting path here is ${CMAKE_SOURCE_DIR}")
 add_library(Unity STATIC ../external/unity/src/unity.c)
