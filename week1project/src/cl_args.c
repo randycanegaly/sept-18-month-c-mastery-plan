@@ -5,17 +5,22 @@
 #include "cl_args.h"
 
 char *parse_args(int num_cl_args, char *argv[]) {
-  char *result = (char *)malloc(128 * sizeof(char));
+  char *result = (char *)calloc(1024, sizeof(char));
 
   if (num_cl_args == 0) {
     sprintf(result, NO_ARGS, num_cl_args);
     printf("no args result: %s\n", result);
-  } else if (num_cl_args > 0 && strcmp(argv[0], "-h") == 0) {
-    sprintf(result, USAGE);
-    printf("help result: %s\n", result);
-  } else if (num_cl_args > 0 && strcmp(argv[0], "-v") == 0) {
-    sprintf(result, VERBOSE);
-    printf("verbose result: %s\n", result);
+  } else {
+    strcpy(result, "");
+    for (int i = 0; i < num_cl_args; i++) {
+      if (strcmp(argv[i], "-h") == 0) {
+        strcat(result, USAGE);
+      }
+      if (strcmp(argv[i], "-v") == 0) {
+        strcat(result, VERBOSE);
+      }
+      // strcat(result, "");
+    }
   }
   return result;
 }

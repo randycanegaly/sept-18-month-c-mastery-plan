@@ -1,6 +1,7 @@
 #include "../../external/unity/src/unity.h"
 #include "../src/cl_args.h"
 #include <stdio.h>
+#include <string.h>
 
 void setUp(void) {}
 void tearDown(void) {}
@@ -39,8 +40,19 @@ void test_help_and_verbose(void) {
   char *verbose = "-v";
   char *handv[] = {help, verbose};
   char *actual = parse_args(2, handv);
-  char expected[128];
-  TEST_ASSERT_EQUAL_STRING("busted test", actual);
+  char expected[1024] = USAGE;
+  strcat(expected, VERBOSE);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
+}
+
+void test_verbose_and_help(void) {
+  char *verbose = "-v";
+  char *help = "-h";
+  char *vandh[] = {verbose, help};
+  char *actual = parse_args(2, vandh);
+  char expected[1024] = VERBOSE;
+  strcat(expected, USAGE);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
 }
 
 int main(void) {
@@ -50,5 +62,6 @@ int main(void) {
   RUN_TEST(test_help);
   RUN_TEST(test_verbose);
   RUN_TEST(test_help_and_verbose);
+  RUN_TEST(test_verbose_and_help);
   return UNITY_END();
 }
