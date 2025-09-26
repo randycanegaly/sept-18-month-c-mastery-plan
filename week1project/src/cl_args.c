@@ -15,7 +15,7 @@ bool is_number(size_t len, char *str) {
   return true;
 }
 
-char *parse_args(int argc, char *argv[]) {
+char *parse_args(int argc, char *argv[], Seen *seen) {
   char *result = (char *)calloc(MAX_OUTPUT, sizeof(char));
 
   if (argc == 1) { // just the program name
@@ -23,41 +23,56 @@ char *parse_args(int argc, char *argv[]) {
     printf("no args result: %s\n", result);
   } else {
     strcpy(result, "");
-    for (int i = 1; i < argc; i++) {
-      if (strcmp(argv[i], "-h") == 0) {
-        strcat(result, USAGE);
-      }
-      if (strcmp(argv[i], "-v") == 0) {
-        strcat(result, VERBOSE);
-      }
-      if (strcmp(argv[i], "-o") == 0) {
-        if (i + 1 < argc) {
-          char *test_for_number = argv[i + 1];
-          if (is_number(strlen(test_for_number), test_for_number)) {
-            strcat(result, "FAIL - incorrect value for '-o' option!\n");
-          } else {
-            snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
-                     "%s\n", test_for_number);
-          }
+    for (int i = 1; i < argc; i++) { // walk all argv strings
+      printf("First look at seen_help: %d\n", seen->seen_help);
+      if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+        if (!seen->seen_help) {
+          printf("Second look at seen_help: %d\n", seen->seen_help);
+          strcat(result, USAGE);
+          seen->seen_help = true;
         } else {
-          snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
-                   "missing value for '-o' option\n");
+          printf("Third look at seen_help: %d\n", seen->seen_help);
+          strcat(result, HELP_DUP);
+          break;
         }
       }
-      if (strcmp(argv[i], "-n") == 0) {
-        if (i + 1 < argc) {
-          char *test_for_number = argv[i + 1];
-          if (!is_number(strlen(test_for_number), test_for_number)) {
-            strcat(result, "FAIL - incorrect value for '-n' option!\n");
-          } else {
-            snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
-                     "%s\n", test_for_number);
-          }
-        } else {
-          snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
-                   "missing value for '-n' option\n");
-        }
-      }
+      /*      if (strcmp(argv[i], "-v") == 0 || strcmp(argv[i], "--verbose") ==
+         0) { for (int j = i + 1; j < argc; j++) { if (strcmp(argv[i], "-v") ==
+         0 || strcmp(argv[i], "--verbose") == 0) { strcat(result, VERBOSE_DUP);
+                  break;
+                }
+                strcat(result, VERBOSE);
+              }
+            }
+
+            if (strcmp(argv[i], "-o") == 0) {
+              if (i + 1 < argc) {
+                char *test_for_number = argv[i + 1];
+                if (is_number(strlen(test_for_number), test_for_number)) {
+                  strcat(result, "FAIL - incorrect value for '-o' option!\n");
+                } else {
+                  snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
+                           "%s\n", test_for_number);
+                }
+              } else {
+                snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
+                         "missing value for '-o' option\n");
+              }
+            }
+            if (strcmp(argv[i], "-n") == 0) {
+              if (i + 1 < argc) {
+                char *test_for_number = argv[i + 1];
+                if (!is_number(strlen(test_for_number), test_for_number)) {
+                  strcat(result, "FAIL - incorrect value for '-n' option!\n");
+                } else {
+                  snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
+                           "%s\n", test_for_number);
+                }
+              } else {
+                snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
+                         "missing value for '-n' option\n");
+              }
+            }*/
     }
   }
   return result;
@@ -67,11 +82,13 @@ char *parse_args(int argc, char *argv[]) {
 int main(int argc, char *argv[]) {
   printf("Number of args: %d\n", argc);
 
+  static Seen seen;
+
   for (int i = 0; i < argc; i++) {
     printf("%s\n", argv[i]);
   }
 
-  parse_args(argc, argv);
+  parse_args(argc, argv, &seen);
 
   printf("main() in cl_args.c ran\n");
   return EXIT_SUCCESS;
