@@ -1,5 +1,6 @@
 #include "../../external/unity/src/unity.h"
 #include "../src/cl_args.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,41 +72,108 @@ void test_verbose_long(void) {
 }
 
 void test_verbose_dup(void) {
+  size_t len = strlen(VERBOSE) + strlen(VERBOSE_DUP) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s%s", VERBOSE, VERBOSE_DUP);
   char *verbose = "-v";
-  char *verbose_args[] = {name, verbose, verbose};
+  char *verbose_word = "-v";
+  char *verbose_args[] = {name, verbose, verbose_word};
   char *actual = parse_args(3, verbose_args, &seen);
-  char expected[128];
-  TEST_ASSERT_EQUAL_STRING(VERBOSE_DUP, actual);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
   free(actual);
+  free(expected);
+}
+
+void test_verbose_dup_both_types(void) {
+  size_t len = strlen(VERBOSE) + strlen(VERBOSE_DUP) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s%s", VERBOSE, VERBOSE_DUP);
+  char *verbose = "-v";
+  char *verbose_word = "--verbose";
+  char *verbose_args[] = {name, verbose, verbose_word};
+  char *actual = parse_args(3, verbose_args, &seen);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
+  free(actual);
+  free(expected);
 }
 
 void test_help_dup(void) {
+  size_t len = strlen(USAGE) + strlen(HELP_DUP) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s%s", USAGE, HELP_DUP);
   char *help = "-h";
-  char *help_args[] = {name, help, help};
+  char *help_word = "-h";
+  char *help_args[] = {name, help, help_word};
   char *actual = parse_args(3, help_args, &seen);
-  char expected[128];
-  TEST_ASSERT_EQUAL_STRING(HELP_DUP, actual);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
   free(actual);
+  free(expected);
+}
+
+void test_help_dup_both_types(void) {
+  size_t len = strlen(USAGE) + strlen(HELP_DUP) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s%s", USAGE, HELP_DUP);
+  char *help = "-h";
+  char *help_work = "--help";
+  char *help_args[] = {name, help, help_work};
+  char *actual = parse_args(3, help_args, &seen);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
+  free(actual);
+  free(expected);
 }
 
 void test_help_and_verbose(void) {
+  size_t len = strlen(USAGE) + strlen(VERBOSE) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s%s", USAGE, VERBOSE);
   char *help = "-h";
   char *verbose = "-v";
   char *handv[] = {name, help, verbose};
   char *actual = parse_args(3, handv, &seen);
-  char expected[1024] = USAGE;
-  strcat(expected, VERBOSE);
   TEST_ASSERT_EQUAL_STRING(expected, actual);
   free(actual);
 }
 
-void test_verbose_and_help(void) {
-  char *verbose = "-v";
+void test_help_and_verbose_dup(void) {
+  size_t len = strlen(USAGE) + strlen(VERBOSE) + strlen(VERBOSE_DUP) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s%s", USAGE, VERBOSE);
   char *help = "-h";
-  char *vandh[] = {name, verbose, help};
-  char *actual = parse_args(3, vandh, &seen);
-  char expected[1024] = VERBOSE;
-  strcat(expected, USAGE);
+  char *verbose = "-v";
+  char *verbose_word = "--verbose";
+  char *handv[] = {name, help, verbose, verbose_word};
+  char *actual = parse_args(3, handv, &seen);
   TEST_ASSERT_EQUAL_STRING(expected, actual);
   free(actual);
 }
@@ -121,6 +189,49 @@ void test_is_not_digit(void) {
   char test[32] = "123456y";
   bool actual = is_number(7, test);
   TEST_ASSERT(!actual);
+}
+
+void test_dash_o_only(void) {
+  char *output = "-o";
+  char *test[] = {name, output};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(MISSING_OUTPUT, actual);
+  free(actual);
+}
+
+void test_dash_o_next_is_dash(void) {
+  size_t len = strlen(USAGE) + strlen(MISSING_OUTPUT) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s%s", USAGE, MISSING_OUTPUT);
+  char *output = "-o";
+  char *file = "-o";
+  char *test[] = {name, output, file};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
+  free(actual);
+}
+
+void test_dash_o_next_is_number(void) {
+  char *output = "-o";
+  char *file = "52";
+  char *test[] = {name, output, file};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(USAGE, actual);
+  free(actual);
+}
+
+void test_dash_o_next_is_file_name(void) {
+  char *output = "-o";
+  char *file = "output.txt";
+  char *test[] = {name, output, file};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(TEST_FILE, actual);
+  free(actual);
 }
 
 //./program -o output.txt -o output.txt
@@ -221,16 +332,22 @@ int main(void) {
   RUN_TEST(test_no_args);
   RUN_TEST(test_help);
   RUN_TEST(test_help_long);
-  /*RUN_TEST(test_verbose);
+  RUN_TEST(test_verbose);
   RUN_TEST(test_verbose_long);
-  RUN_TEST(test_verbose_dup);*/
+  RUN_TEST(test_verbose_dup);
   RUN_TEST(test_help_dup);
-  /*RUN_TEST(test_help_and_verbose);
-  RUN_TEST(test_verbose_and_help);
+  RUN_TEST(test_help_dup_both_types);
+  RUN_TEST(test_verbose_dup_both_types);
+  RUN_TEST(test_help_and_verbose);
+  RUN_TEST(test_help_and_verbose_dup);
   RUN_TEST(test_is_digit);
   RUN_TEST(test_is_not_digit);
-  RUN_TEST(test_output_value_option);
-  RUN_TEST(test_output_value_option_fail);
+  // RUN_TEST(test_output_value_option);
+  RUN_TEST(test_dash_o_only);
+  RUN_TEST(test_dash_o_next_is_dash);
+  RUN_TEST(test_dash_o_next_is_number);
+  RUN_TEST(test_dash_o_next_is_file_name);
+  /*RUN_TEST(test_output_value_option_fail);
   RUN_TEST(test_output_value_out_of_order);
   RUN_TEST(test_number_value_option);
   RUN_TEST(test_number_value_option_fail);

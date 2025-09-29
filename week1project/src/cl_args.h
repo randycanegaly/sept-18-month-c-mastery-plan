@@ -10,12 +10,14 @@
   "[--output=file] [-number=number] "
 #define NO_ARGS "You entered %d command line arguments."
 #define VERBOSE "You requested verbose output. "
-#define VERBOSE_DUP                                                            \
-  "You requested verbose output. WARN: Duplicate option seen. "
-#define HELP_DUP                                                               \
+#define VERBOSE_DUP " WARN: Duplicate option seen. "
+#define HELP                                                                   \
   "./parse_args [-v] [-h] [-o file] [-n number] [--verbose] [--help] "         \
-  "[--output=file] [-number=number] You requested help. WARN: Duplicate "      \
-  "option seen. "
+  "[--output=file] [-number=number]"
+#define HELP_DUP "You requested help. WARN: Duplicate option seen."
+#define MISSING_OUTPUT "Missing value for -o option."
+#define TEST_FILE "output.txt"
+
 #define MAX_OUTPUT 1024
 
 typedef struct {
