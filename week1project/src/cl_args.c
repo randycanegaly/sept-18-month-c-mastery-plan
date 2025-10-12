@@ -42,7 +42,7 @@ char *parse_args(int argc, char *argv[], Seen *seen) {
           break;
         }
       }
-      if (strcmp(argv[i], "-o") == 0) {
+      if (strcmp(argv[i], "-o") == 0 || strcmp(argv[i], "--output") == 0) {
         if (i == argc - 1) { //-o is the last command line argument
           snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
                    MISSING_OUTPUT);
@@ -54,19 +54,33 @@ char *parse_args(int argc, char *argv[], Seen *seen) {
             strcat(result, next_arg);
           }
         }
+      } else if (strncmp(argv[i], "--output=", 9) == 0 && strlen(argv[i]) > 9) {
+        char *str_tmp = argv[i] + 9;
+        if (is_number(strlen(str_tmp), str_tmp)) {
+          strcat(result, USAGE);
+        } else {
+          strcat(result, str_tmp);
+        }
       }
-      if (strcmp(argv[i], "-n") == 0) {
+      if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--number") == 0) {
         if (i + 1 < argc) {
           char *test_for_number = argv[i + 1];
           if (!is_number(strlen(test_for_number), test_for_number)) {
-            strcat(result, "FAIL - incorrect value for '-n' option!\n");
+            strcat(result, MISSING_NUMBER);
           } else {
-            snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
-                     "%s\n", test_for_number);
+            snprintf(result + strlen(result), MAX_OUTPUT - strlen(result), "%s",
+                     test_for_number);
           }
         } else {
           snprintf(result + strlen(result), MAX_OUTPUT - strlen(result),
-                   "missing value for '-n' option\n");
+                   MISSING_NUMBER);
+        }
+      } else if (strncmp(argv[i], "--number=", 9) == 0 && strlen(argv[i]) > 9) {
+        char *str_tmp = argv[i] + 9;
+        if (!is_number(strlen(str_tmp), str_tmp)) {
+          strcat(result, USAGE);
+        } else {
+          strcat(result, str_tmp);
         }
       }
     }

@@ -16,8 +16,9 @@
   "[--output=file] [-number=number]"
 #define HELP_DUP "You requested help. WARN: Duplicate option seen."
 #define MISSING_OUTPUT "Missing value for -o option."
+#define MISSING_NUMBER "Missing value for -n option."
 #define TEST_FILE "output.txt"
-
+#define TEST_NUMBER 9
 #define MAX_OUTPUT 1024
 
 typedef struct {

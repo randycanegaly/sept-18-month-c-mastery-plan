@@ -234,6 +234,100 @@ void test_dash_o_next_is_file_name(void) {
   free(actual);
 }
 
+void test_dash_o_long_next_is_file_name(void) {
+  char *output = "--output";
+  char *file = "output.txt";
+  char *test[] = {name, output, file};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(TEST_FILE, actual);
+  free(actual);
+}
+
+void test_dash_n_only(void) {
+  char *number = "-n";
+  char *test[] = {name, number};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(MISSING_NUMBER, actual);
+  free(actual);
+}
+
+void test_dash_n_next_is_dash(void) {
+  size_t len = strlen(USAGE) + strlen(MISSING_NUMBER) + 1;
+  char *expected = malloc(len);
+
+  if (expected == NULL) {
+    TEST_FAIL_MESSAGE("Memory allocation failed!");
+  }
+
+  snprintf(expected, len, "%s", MISSING_NUMBER);
+  char *number = "-n";
+  char *num = "-";
+  char *test[] = {name, number, num};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(expected, actual);
+  free(actual);
+}
+
+void test_dash_n_next_is_file_name(void) {
+  char *number = "-n";
+  char *file = "output.txt";
+  char *test[] = {name, number, file};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(MISSING_NUMBER, actual);
+  free(actual);
+}
+
+void test_dash_n_next_is_number(void) {
+  char *number = "-n";
+  char *num = "52";
+  char *test[] = {name, number, num};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(num, actual);
+  free(actual);
+}
+
+void test_dash_n_long_next_is_number(void) {
+  char *number = "--number";
+  char *num = "52";
+  char *test[] = {name, number, num};
+  char *actual = parse_args(3, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(num, actual);
+  free(actual);
+}
+
+void test_dash_o_long_with_equals(void) {
+  char *output = "--output=output.txt";
+  char *test[] = {name, output};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(TEST_FILE, actual);
+  free(actual);
+}
+
+void test_dash_o_long_with_equals_is_number(void) {
+  char *output = "--output=52";
+  char *test[] = {name, output};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(USAGE, actual);
+  free(actual);
+}
+
+void test_dash_n_long_with_equals(void) {
+  char *number = "--number=52";
+  char *test[] = {name, number};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING("52", actual);
+  free(actual);
+}
+
+void test_dash_n_long_with_equals_is_file_name(void) {
+  char *number = "--number=output.txt";
+  char *test[] = {name, number};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(USAGE, actual);
+  free(actual);
+}
+
+/*
 //./program -o output.txt -o output.txt
 void test_output_value_option(void) {
   char *output = "-o";
@@ -276,7 +370,7 @@ void test_number_value_option(void) {
   free(actual);
 }
 
-void test_number_value_option_fail(void) {
+  void test_number_value_option_fail(void) {
   char *num = "-n";
   char *value = "dog";
   char *test[] = {name, num, value};
@@ -319,6 +413,7 @@ void test_number_and_output_bad_order(void) {
   TEST_ASSERT_EQUAL_STRING(expected, actual);
   free(actual);
 }
+*/
 
 /* Need tests for:
  * ./program -o -o or -o -v
@@ -347,6 +442,16 @@ int main(void) {
   RUN_TEST(test_dash_o_next_is_dash);
   RUN_TEST(test_dash_o_next_is_number);
   RUN_TEST(test_dash_o_next_is_file_name);
+  RUN_TEST(test_dash_o_long_next_is_file_name);
+  RUN_TEST(test_dash_n_only);
+  RUN_TEST(test_dash_n_next_is_dash);
+  RUN_TEST(test_dash_n_next_is_file_name);
+  RUN_TEST(test_dash_n_next_is_number);
+  RUN_TEST(test_dash_n_long_next_is_number);
+  RUN_TEST(test_dash_o_long_with_equals);
+  RUN_TEST(test_dash_n_long_with_equals);
+  RUN_TEST(test_dash_o_long_with_equals_is_number);
+  RUN_TEST(test_dash_n_long_with_equals_is_file_name);
   /*RUN_TEST(test_output_value_option_fail);
   RUN_TEST(test_output_value_out_of_order);
   RUN_TEST(test_number_value_option);
