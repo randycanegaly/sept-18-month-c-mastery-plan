@@ -327,99 +327,21 @@ void test_dash_n_long_with_equals_is_file_name(void) {
   free(actual);
 }
 
-/*
-//./program -o output.txt -o output.txt
-void test_output_value_option(void) {
-  char *output = "-o";
-  char *file = "output.txt";
-  char *test[] = {name, output, file};
-  char expected[1024] = "output.txt\n";
-  char *actual = parse_args(3, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
+void test_bad_dash(void) {
+  char *dash = "-q";
+  char *test[] = {name, dash};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(USAGE, actual);
   free(actual);
 }
 
-void test_output_value_option_fail(void) {
-  char *output = "-o";
-  char *file = "12345";
-  char *test[] = {name, output, file};
-  char expected[1024] = "FAIL - incorrect value for '-o' option!\n";
-  char *actual = parse_args(3, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
+void test_gibberish(void) {
+  char *gib = "awdfladskurewr82903prjhw";
+  char *test[] = {name, gib};
+  char *actual = parse_args(2, test, &seen);
+  TEST_ASSERT_EQUAL_STRING(USAGE, actual);
   free(actual);
 }
-
-void test_output_value_out_of_order(void) {
-  char *output = "-o";
-  char *file = "12345";
-  char *test[] = {name, file, output};
-  char expected[1024] = "missing value for '-o' option\n";
-  char *actual = parse_args(3, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
-  free(actual);
-}
-
-//./program -n 52
-void test_number_value_option(void) {
-  char *num = "-n";
-  char *value = "52";
-  char *test[] = {name, num, value};
-  char expected[1024] = "52\n";
-  char *actual = parse_args(3, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
-  free(actual);
-}
-
-  void test_number_value_option_fail(void) {
-  char *num = "-n";
-  char *value = "dog";
-  char *test[] = {name, num, value};
-  char expected[1024] = "FAIL - incorrect value for '-n' option!\n";
-  char *actual = parse_args(3, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
-  free(actual);
-}
-
-void test_number_value_out_of_order(void) {
-  char *num = "-n";
-  char *value = "53";
-  char *test[] = {name, value, num};
-  char expected[1024] = "missing value for '-n' option\n";
-  char *actual = parse_args(3, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
-  free(actual);
-}
-
-void test_number_and_output(void) {
-  char *num = "-n";
-  char *value = "52";
-  char *output = "-o";
-  char *file = "output.txt";
-  char *test[] = {name, num, value, output, file};
-  char expected[1024] = "52\noutput.txt\n";
-  char *actual = parse_args(5, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
-  free(actual);
-}
-
-void test_number_and_output_bad_order(void) {
-  char *num = "-n";
-  char *value = "52";
-  char *output = "-o";
-  char *file = "output.txt";
-  char *test[] = {name, num, value, file, output};
-  char expected[1024] = "52\nmissing value for '-o' option\n";
-  char *actual = parse_args(5, test, &seen);
-  TEST_ASSERT_EQUAL_STRING(expected, actual);
-  free(actual);
-}
-*/
-
-/* Need tests for:
- * ./program -o -o or -o -v
- * ./program --verbose, --help, --output=output.txt, --number --> make an or to
- * take either -v or --verbose
- */
 
 int main(void) {
   UNITY_BEGIN();
@@ -437,7 +359,6 @@ int main(void) {
   RUN_TEST(test_help_and_verbose_dup);
   RUN_TEST(test_is_digit);
   RUN_TEST(test_is_not_digit);
-  // RUN_TEST(test_output_value_option);
   RUN_TEST(test_dash_o_only);
   RUN_TEST(test_dash_o_next_is_dash);
   RUN_TEST(test_dash_o_next_is_number);
@@ -452,12 +373,7 @@ int main(void) {
   RUN_TEST(test_dash_n_long_with_equals);
   RUN_TEST(test_dash_o_long_with_equals_is_number);
   RUN_TEST(test_dash_n_long_with_equals_is_file_name);
-  /*RUN_TEST(test_output_value_option_fail);
-  RUN_TEST(test_output_value_out_of_order);
-  RUN_TEST(test_number_value_option);
-  RUN_TEST(test_number_value_option_fail);
-  RUN_TEST(test_number_value_out_of_order);
-  RUN_TEST(test_number_and_output);
-  RUN_TEST(test_number_and_output_bad_order);*/
+  RUN_TEST(test_bad_dash);
+  RUN_TEST(test_gibberish);
   return UNITY_END();
 }

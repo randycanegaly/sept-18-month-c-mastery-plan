@@ -85,22 +85,25 @@ char *parse_args(int argc, char *argv[], Seen *seen) {
       }
     }
   }
+
+  if (strlen(result) == 0) {
+    strcat(result, USAGE);
+  }
   return result;
 }
 
 #ifdef IS_EXE
 int main(int argc, char *argv[]) {
   printf("Number of args: %d\n", argc);
-
   static Seen seen;
-
+  printf("Args:\n");
   for (int i = 0; i < argc; i++) {
     printf("%s\n", argv[i]);
   }
 
-  parse_args(argc, argv, &seen);
+  char *result = parse_args(argc, argv, &seen);
 
-  printf("main() in cl_args.c ran\n");
+  printf("%s\n", result);
   return EXIT_SUCCESS;
 }
 #endif
